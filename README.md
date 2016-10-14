@@ -1,6 +1,10 @@
 # yamledit
 Python command line YAML file editor
 
+# Version
+
+0.1
+
 # Options:
     -h                  Print this help
     -v                  Version
@@ -25,3 +29,12 @@ This will set:
 Needs python 2.7
 
     pip install ruamel.yaml
+
+# Future
+
+- Delete nodes
+
+- Create new nodes, and optionally update if it already exists
+
+- Given two files, "merge" them together
+
