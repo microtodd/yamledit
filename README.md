@@ -12,7 +12,7 @@ Python command line YAML file editor
                         If used it must be the last option used.
 
 # Example:
-    python ecyaml.py -f in.yml -o out.yml -f foo.bar.biz baz
+    python yamledit.py -f in.yml -o out.yml -f foo.bar.biz baz
     
 This will set:
 
