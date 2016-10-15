@@ -54,7 +54,7 @@ Needs python 2.7
 
 - Delete nodes
 
-- Create new nodes, and optionally update if it already exists
+- Support lists
 
 - Given two files, "merge" them together
 
