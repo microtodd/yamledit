@@ -35,6 +35,7 @@ This will set the following, and report an error if the key doesn't exist:
             bar:
                 biz: baz
 
+# Another example:
     python ecyaml.py -f in.yml -o out.yml -c foo.bar.biz baz
 
 This will create, or optionally update if it exists:
