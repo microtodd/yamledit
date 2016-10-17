@@ -3,18 +3,19 @@ Python command line YAML file editor
 
 # Version
 
-0.2
+0.3
 
 # Options:
 
     -h                  Print this help
     -v                  Version
-    -f <filename>       (Required), input file
-    -o <filename>       (Optional), output file, if not specified goes to STDOUT
-    -y                  (Optional), if passed then any user confirmation is assumed "yes"
-    -q                  (Optional), if passed then everything is silent. This option implies -y.
+    -f <filename>       Input file
+    -o <filename>       Output file, if not specified goes to STDOUT
+    -y                  If passed then any user confirmation is assumed "yes"
+    -q                  If passed then everything is silent. This option implies -y.
 
-        You must pick one and only one: -r or -c
+        You must pick one and only one: -r or -c or -n
+        If you pick -r or -c or -d, you must specify -f as well
 
     -r <key> <newvalue> Replace.  'key' is of format foo.bar.biz.baz
                         If key does not exist, returns error.
@@ -24,6 +25,10 @@ Python command line YAML file editor
                         If key already exists, will prompt to overwrite
                         unless -y is selected.
                         If used it must be the last option used.
+
+    -n <key> <value>    New yaml file with 'key' with value 'value'.
+
+    -d <key>            Delete 'key'
 
 
 # Examples:
