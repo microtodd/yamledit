@@ -57,8 +57,6 @@ Needs python 2.7
 
 # Future
 
-- Delete nodes
-
 - Support lists
 
 - Given two files, "merge" them together
