@@ -9,7 +9,7 @@ import ruamel.yaml
 from ruamel import yaml
 from ruamel.yaml.scalarstring import SingleQuotedScalarString, DoubleQuotedScalarString
 
-__version__ = '0.3'
+__version__ = '0.4'
 
 # TODO
 #
@@ -35,7 +35,7 @@ def printHelp():
     -r <key> <value>    Replace the value of 'key' with 'value'
     -c <key> <value>    Create 'key' with value 'value'
 
-        You must pick one and only one: -r or -c or -n or -d
+        You must pick one and only one: -r or -c or -n or -d or -g
         If you pick -r or -c or -d, you must specify -f as well
 
     -r <key> <newvalue> Replace.  'key' is of format foo.bar.biz.baz
@@ -50,6 +50,8 @@ def printHelp():
     -n <key> <value>    New file with 'key' with value 'value'.
 
     -d <key>            Delete 'key'
+
+    -g <key>            Print the value of <key>, to STDOUT or to the filename
     '''
 
 ## printVersion
@@ -81,6 +83,32 @@ def createFile(outputFileName, data, autoConfirm, quiet):
     # Create the file
     newFile = open(outputFileName,'w')
     newFile.write( ruamel.yaml.round_trip_dump(data) )
+    newFile.close()
+
+## createTxtFile
+#
+# @param[in] filename
+# @param[in] data
+# @param[in] autoConfirm
+# @param[in] quiet
+#
+def createTxtFile(outputFileName, data, autoConfirm, quiet):
+
+    # see if file exists
+    if os.path.exists(outputFileName):
+
+        # See if we autoconfirmed
+        if autoConfirm or quiet:
+            pass
+        else:
+            userInput = raw_input('File \'' + str(outputFileName) + '\' exists. Overwrite? (y/n): ')
+            if userInput != 'y' and userInput != 'Y':
+                print 'Aborting.'
+                return
+
+    # Create the file
+    newFile = open(outputFileName,'w')
+    newFile.write( data )
     newFile.close()
 
 ## replaceValue
@@ -315,6 +343,53 @@ def deleteKey(inputFileName, outputFileName, keyName, autoConfirm, quiet):
     else:
         createFile(outputFileName, data, autoConfirm, quiet)
 
+## getValue
+#
+# @param[in] inputFileName
+# @param[in] outputFileName
+# @param[in] keyName
+# @param[in] autoConfirm
+# @param[in] quiet
+#
+def getValue(inputFileName, outputFileName, keyName, autoConfirm, quiet):
+    inputFile = None        # Handle to input file data
+
+    # Open file
+    try:
+        inputFile = open(inputFileName)
+    except Exception as e:
+        raise Exception('Could not open/parse file \'' + str(inputFileName) + '\': ' + str(e))
+
+    # Load it
+    data = ruamel.yaml.round_trip_load(inputFile, preserve_quotes=True)
+
+    # See if the key exists
+    # TODO move this piece into a method called 'findNode', and let createValue use it as well
+    keyPath = str(keyName).split('.')
+    lastNodeName = keyPath.pop()
+    currentNode = data
+    for nodeName in keyPath:
+        if nodeName in currentNode:
+            currentNode = currentNode[nodeName]
+        else:
+            raise Exception('Could not find \'' + str(keyName) + '\' in yaml file')
+
+    # Check that last key
+    if lastNodeName not in currentNode:
+        raise Exception('Could not find \'' + str(keyName) + '\' in yaml file')
+
+    # Get the value
+    if outputFileName is None:
+        if isinstance(currentNode[lastNodeName],str):
+            print currentNode[lastNodeName]
+        else:
+            print ruamel.yaml.round_trip_dump(currentNode[lastNodeName])
+    else:
+        if isinstance(currentNode[lastNodeName],str):
+            createTxtFile(outputFileName, currentNode[lastNodeName], autoConfirm, quiet)
+        else:
+            createFile(outputFileName, currentNode[lastNodeName], autoConfirm, quiet)
+
 ## main
 #
 def main(argv):
@@ -327,7 +402,7 @@ def main(argv):
     quiet = False
 
     # Grab and process the command line arguments
-    opts, args = getopt.getopt(argv, 'hvyqnrcf:o:d:')
+    opts, args = getopt.getopt(argv, 'hvyqnrcf:o:d:g:')
     for opt, arg in opts:
         if opt == '-f':
             inputFileName = str(arg)
@@ -349,8 +424,13 @@ def main(argv):
             printHelp()
             sys.exit(0)
 
+        # For delete, only one value, the key
         if opt == '-d':
             actions['delete'] = str(arg)
+
+        # For get, only one value, the key
+        if opt == '-g':
+            actions['get'] = str(arg)
 
         # If -r is used, we assume two arguments
         if opt == '-r':
@@ -432,6 +512,13 @@ def main(argv):
         elif action == 'delete':
             try:
                 deleteKey(inputFileName,outputFileName,actions[action],autoConfirm,quiet)
+            except Exception as e:
+                print 'ERROR: ' + str(e)
+                sys.exit(5)
+
+        elif action == 'get':
+            try:
+                getValue(inputFileName,outputFileName,actions[action],autoConfirm,quiet)
             except Exception as e:
                 print 'ERROR: ' + str(e)
                 sys.exit(5)

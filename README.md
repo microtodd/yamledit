@@ -3,7 +3,7 @@ Python command line YAML file editor
 
 # Version
 
-0.3
+0.4
 
 # Options:
 
@@ -30,6 +30,9 @@ Python command line YAML file editor
 
     -d <key>            Delete 'key'
 
+    -g <key>            Get value for 'key'. If its a simple string, print that value. If its
+                        another YAML fragment, print it in YAML syntax. Prints to STDOUT or
+                        to a file if -f specified.
 
 # Examples:
     python yamledit.py -f in.yml -o out.yml -f foo.bar.biz baz
