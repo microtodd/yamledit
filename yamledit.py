@@ -9,11 +9,10 @@ import ruamel.yaml
 from ruamel import yaml
 from ruamel.yaml.scalarstring import SingleQuotedScalarString, DoubleQuotedScalarString
 
-__version__ = '0.4'
+__version__ = '0.5'
 
 # TODO
 #
-# ) support lists
 # ) merge two yaml files capability
 # ) Support input pipe instead of file
 #
@@ -32,11 +31,11 @@ def printHelp():
     -o <filename>       Output file, if not specified goes to STDOUT
     -y                  If passed then any user confirmation is assumed 'yes'
     -q                  If passed then everything is silent. This option implies -y.
-    -r <key> <value>    Replace the value of 'key' with 'value'
-    -c <key> <value>    Create 'key' with value 'value'
 
         You must pick one and only one: -r or -c or -n or -d or -g
         If you pick -r or -c or -d, you must specify -f as well
+
+        <newvalue> can be a comma-separated list, which is treated as a YAML list
 
     -r <key> <newvalue> Replace.  'key' is of format foo.bar.biz.baz
                         If key does not exist, returns error.
@@ -150,10 +149,13 @@ def replaceValue(inputFileName, outputFileName, values, autoConfirm, quiet):
 
     # Update the value
     if not quiet:
+        extra = ''
+        if str(newValue).find(',') != -1:
+            extra = ' (a list)'
         if isinstance(currentNode[lastNodeName],str):
-            print 'Updating \'' + str(keyName) + '\' from \'' + currentNode[lastNodeName] + '\' to \'' + newValue + '\''
+            print 'Updating \'' + str(keyName) + '\' from \'' + currentNode[lastNodeName] + '\' to \'' + newValue + '\'' + extra
         else:
-            print 'Updating \'' + str(keyName) + '\', which is not currently a string, to \'' + newValue + '\''
+            print 'Updating \'' + str(keyName) + '\', which is not currently a string, to \'' + newValue + '\'' + extra
 
     if autoConfirm == False and quiet == False:
         userInput = raw_input('Continue? (y/n): ')
@@ -161,7 +163,12 @@ def replaceValue(inputFileName, outputFileName, values, autoConfirm, quiet):
             print 'Aborting.'
             return
 
-    currentNode[lastNodeName] = newValue
+    # See if new value is a string or a list
+    if str(newValue).find(',') == -1:
+        currentNode[lastNodeName] = newValue
+    else:
+        newValueList = str(newValue).split(',')
+        currentNode[lastNodeName] = newValueList
 
     # Output
     if outputFileName is None:
@@ -213,10 +220,13 @@ def createValue(inputFileName, outputFileName, values, autoConfirm, quiet):
         outputMessage = 'Updating existing key '
 
     if not quiet:
+        extra = ''
+        if str(newValue).find(',') != -1:
+            extra = ' (a list)'
         if isinstance(currentNode[lastNodeName],str):
-            print outputMessage + '\'' + str(keyName) + '\' from \'' + currentNode[lastNodeName] + '\' to \'' + newValue + '\''
+            print outputMessage + '\'' + str(keyName) + '\' from \'' + currentNode[lastNodeName] + '\' to \'' + newValue + '\'' + extra
         else:
-            print outputMessage + '\'' + str(keyName) + '\' as \'' + newValue + '\''
+            print outputMessage + '\'' + str(keyName) + '\' as \'' + newValue + '\'' + extra
 
     if autoConfirm == False and quiet == False:
         userInput = raw_input('Continue? (y/n): ')
@@ -224,7 +234,12 @@ def createValue(inputFileName, outputFileName, values, autoConfirm, quiet):
             print 'Aborting.'
             return
 
-    currentNode[lastNodeName] = newValue
+    # See if new value is a string or a list
+    if str(newValue).find(',') == -1:
+        currentNode[lastNodeName] = newValue
+    else:
+        newValueList = str(newValue).split(',')
+        currentNode[lastNodeName] = newValueList
 
     # Output
     if outputFileName is None:

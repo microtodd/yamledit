@@ -3,7 +3,7 @@ Python command line YAML file editor
 
 # Version
 
-0.4
+0.5
 
 # Options:
 
@@ -16,6 +16,8 @@ Python command line YAML file editor
 
         You must pick one and only one: -r or -c or -n
         If you pick -r or -c or -d, you must specify -f as well
+
+        <newvalue> can be a comma-separated list, which will be treated as a YAML list
 
     -r <key> <newvalue> Replace.  'key' is of format foo.bar.biz.baz
                         If key does not exist, returns error.
@@ -59,8 +61,6 @@ Needs python 2.7
     pip install ruamel.yaml
 
 # Future
-
-- Support lists
 
 - Given two files, "merge" them together
 
