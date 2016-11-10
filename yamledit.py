@@ -168,6 +168,11 @@ def replaceValue(inputFileName, outputFileName, values, autoConfirm, quiet):
         currentNode[lastNodeName] = newValue
     else:
         newValueList = str(newValue).split(',')
+
+        # If this was a trailing ',', then we treat it as a list but we are not going to add a null entry
+        if newValueList[-1] == '':
+            newValueList.pop()
+
         currentNode[lastNodeName] = newValueList
 
     # Output
@@ -238,7 +243,13 @@ def createValue(inputFileName, outputFileName, values, autoConfirm, quiet):
     if str(newValue).find(',') == -1:
         currentNode[lastNodeName] = newValue
     else:
+
         newValueList = str(newValue).split(',')
+
+        # If this was a trailing ',', then we treat it as a list but we are not going to add a null entry
+        if newValueList[-1] == '':
+            newValueList.pop()
+
         currentNode[lastNodeName] = newValueList
 
     # Output
