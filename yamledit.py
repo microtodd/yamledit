@@ -1,3 +1,4 @@
+#!/usr/bin/python
 #
 # yamledit.py
 # github.com/microtodd/yamledit
@@ -40,7 +41,7 @@ def printHelp():
     -r <key> <newvalue> Replace.  'key' is of format foo.bar.biz.baz
                         If key does not exist, returns error.
                         If used it must be the last option used.
-    
+
     -c <key> <newvalue> Create. 'key' is of format foo.bar.biz.baz.
                         If key already exists, will prompt to overwrite
                         unless -y is selected.
@@ -180,7 +181,7 @@ def replaceValue(inputFileName, outputFileName, values, autoConfirm, quiet):
         print ruamel.yaml.round_trip_dump(data)
     else:
         createFile(outputFileName, data, autoConfirm, quiet)
-        
+
 ## createValue
 #
 # @param[in] inputFileName
